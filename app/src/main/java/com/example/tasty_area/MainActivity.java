@@ -1,44 +1,70 @@
 package com.example.tasty_area;
 
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private GoogleMap mMap;
+public class MainActivity extends AppCompatActivity {
+    SliderAdaptor sliderAdaptor;
+    ViewPager viewPager;
+    TextView radiusText;
+    SeekBar seekBar;
+    int radius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
+        viewPager = (ViewPager) findViewById(R.id.view);
+        sliderAdaptor = new SliderAdaptor(this);
+        viewPager.setAdapter(sliderAdaptor);
 
-    @Override
-    public void onMapReady(final GoogleMap googleMap) {
-        mMap = googleMap;
+        seekBar = findViewById(R.id.seekBar);
+        radiusText = findViewById(R.id.radiusText);
+        radiusText.setText("200m");
+        radius = 200;
 
-        LatLng SEOUL = new LatLng(37.556, 126.97);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(SEOUL);
-        markerOptions.title("서울");
-        markerOptions.snippet("대한민국 수도");
+            }
 
-        mMap.addMarker(markerOptions);
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SEOUL, 10));
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                switch (seekBar.getProgress()) {
+                    case 0:
+                        radiusText.setText("200m");
+                        radius = 200;
+                        break;
+                    case 1:
+                        radiusText.setText("400m");
+                        radius = 400;
+                        break;
+                    case 2:
+                        radiusText.setText("600m");
+                        radius = 600;
+                        break;
+                    case 3:
+                        radiusText.setText("800m");
+                        radius = 800;
+                        break;
+                    case 4:
+                        radiusText.setText("1km");
+                        radius = 1000;
+                        break;
+                }
+            }
+        });
+
     }
 }
