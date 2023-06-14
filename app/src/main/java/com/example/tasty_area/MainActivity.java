@@ -3,15 +3,21 @@ package com.example.tasty_area;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    static final int GET_RESULT = 1;
+
     SliderAdaptor sliderAdaptor;
     ViewPager viewPager;
     TextView radiusText;
     SeekBar seekBar;
+    Button searchButton;
     int radius;
 
     @Override
@@ -23,10 +29,21 @@ public class MainActivity extends AppCompatActivity {
         sliderAdaptor = new SliderAdaptor(this);
         viewPager.setAdapter(sliderAdaptor);
 
-        seekBar = findViewById(R.id.seekBar);
-        radiusText = findViewById(R.id.radiusText);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        radiusText = (TextView) findViewById(R.id.radiusText);
         radiusText.setText("200m");
         radius = 200;
+
+        searchButton = (Button) findViewById(R.id.searchButton);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MapComponent.class);
+//                intent.putExtra("radius", String.valueOf(radius));
+//                startActivityForResult(intent, GET_RESULT);
+                startActivity(intent);
+            }
+        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -65,6 +82,5 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
     }
 }
