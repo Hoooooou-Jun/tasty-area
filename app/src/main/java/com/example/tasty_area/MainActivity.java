@@ -35,15 +35,6 @@ public class MainActivity extends AppCompatActivity {
         radius = 200;
 
         searchButton = (Button) findViewById(R.id.searchButton);
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MapComponent.class);
-//                intent.putExtra("radius", String.valueOf(radius));
-//                startActivityForResult(intent, GET_RESULT);
-                startActivity(intent);
-            }
-        });
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -82,5 +73,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MapComponent.class);
+//                intent.putExtra("radius", String.valueOf(radius));
+//                startActivityForResult(intent, GET_RESULT);
+                startActivity(intent);
+            }
+        });
+
     }
 }
