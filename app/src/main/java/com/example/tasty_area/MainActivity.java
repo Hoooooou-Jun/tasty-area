@@ -1,16 +1,14 @@
 package com.example.tasty_area;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 public class MainActivity extends AppCompatActivity {
     static final int GET_RESULT = 1;
@@ -80,8 +78,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, MapComponent.class);
-//                intent.putExtra("radius", String.valueOf(radius));
-//                startActivityForResult(intent, GET_RESULT);
+                intent.putExtra("radius", radius);
                 startActivity(intent);
             }
         });

@@ -1,8 +1,6 @@
 package com.example.tasty_area;
 
 import android.Manifest;
-import androidx.appcompat.app.AlertDialog;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,9 +13,11 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -38,19 +38,25 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MapComponent extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback{
+import noman.googleplaces.NRPlaces;
+import noman.googleplaces.Place;
+import noman.googleplaces.PlaceType;
+import noman.googleplaces.PlacesException;
+import noman.googleplaces.PlacesListener;
+
+public class MapComponent extends AppCompatActivity implements OnMapReadyCallback, ActivityCompat.OnRequestPermissionsResultCallback, PlacesListener {
     private GoogleMap mMap;
     private PlacesClient placesClient;
     private Marker currentMarker = null;
+    List<Marker> previous_marker = null;
 
     private static final String TAG = "맛세권";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
@@ -74,17 +80,20 @@ public class MapComponent extends AppCompatActivity implements OnMapReadyCallbac
     private final LatLng defaultLocation = new LatLng(37.5665, 126.9780);
     private static final int DEFAULT_ZOOM = 15;
 
-    List<Place.Field> placeFields = Arrays.asList(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.LAT_LNG);
-
-
+    int radius;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.component_map);
+
+        Intent intent = getIntent();
+        radius = intent.getIntExtra("radius", 0);
+
+        previous_marker = new ArrayList<Marker>();
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        setContentView(R.layout.component_map);
         mLayout = findViewById(R.id.layout_map);
 
         locationRequest = new LocationRequest()
@@ -169,6 +178,8 @@ public class MapComponent extends AppCompatActivity implements OnMapReadyCallbac
                 // 현재 위치에 마커 생성하고 이동
                 setCurrentLocation(location, markerTitle, markerSnippet);
                 mCurrentLocatiion = location;
+
+                showPlaceInformation(currentPosition);
             }
         }
     };
@@ -225,7 +236,7 @@ public class MapComponent extends AppCompatActivity implements OnMapReadyCallbac
         }
 
         if (addresses == null || addresses.size() == 0) {
-            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
             return "주소 미발견";
         } else {
             Address address = addresses.get(0);
@@ -243,7 +254,7 @@ public class MapComponent extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void setCurrentLocation(Location location, String markerTitle, String markerSnippet) {
-        if (currentMarker != null) currentMarker.remove();
+//        if (currentMarker != null) currentMarker.remove();
         LatLng currentLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.position(currentLatLng);
@@ -373,5 +384,56 @@ public class MapComponent extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onPlacesFailure(PlacesException e) {
+
+    }
+
+    @Override
+    public void onPlacesStart() {
+
+    }
+
+    @Override
+    public void onPlacesSuccess(final List<Place> places) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                for (noman.googleplaces.Place place : places) {
+                    LatLng latLng = new LatLng(place.getLatitude(), place.getLongitude());
+
+                    String markerSnippet = getCurrentAddress(latLng);
+
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(latLng);
+                    markerOptions.title(place.getName());
+                    markerOptions.snippet(markerSnippet);
+                    mMap.addMarker(markerOptions);
+                }
+            }
+        });
+
+    }
+    @Override
+    public void onPlacesFinished() {
+
+    }
+
+    public void showPlaceInformation(LatLng location)
+    {
+//        mMap.clear();//지도 클리어
+        if (previous_marker != null)
+            previous_marker.clear(); // 지역정보 마커 클리어
+
+        new NRPlaces.Builder()
+                .listener(MapComponent.this)
+                .key(BuildConfig.MAPS_API_KEY)
+                .latlng(location.latitude, location.longitude)
+                .radius(radius) // 반경 받아오기;
+                .type(PlaceType.RESTAURANT)
+                .build()
+                .execute();
     }
 }
