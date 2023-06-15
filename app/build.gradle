@@ -1,5 +1,6 @@
 plugins {
     id 'com.android.application'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
 android {
@@ -38,7 +39,8 @@ dependencies {
     implementation('com.google.android.gms:play-services-location:21.0.1')
     implementation ('noman.placesapi:placesAPI:1.1.3')
 
-    implementation 'com.github.IslamKhSh:CardSlider:1.0.1'
+    implementation 'com.google.android.libraries.places:places:3.1.0'
+    implementation 'com.google.android.material:material:1.4.0-alpha02'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
